@@ -14,12 +14,55 @@
 
 <div class="EventDiscrption">
   
-  <div class="EventDiscrption-text" >
-  <h1>Organizer Dashboard</h1>
-  <p>Manage your sustainable events</p>
+  <div class="EventDiscrption-text">
+    <h1>Organizer Dashboard</h1>
+    <p>Manage your sustainable events</p>
   </div>
 
-  <a href="CreateEvent.php" class="btn"><b>＋ Create Event</b></a>
+
+<!-- zayzay start -->
+<!-- Create Event button -->
+  <a href="#" id="openCreateModal" class="btn"><b>＋ Create Event</b></a>
+  <?php include("CreateEvent.php"); ?>
+
+<script src="js/main.js"></script>
+
+<script>
+// Get modal and buttons
+const modal = document.getElementById('createEventModal');
+const openBtn = document.getElementById('openCreateModal');
+const closeBtn = document.querySelector('.close');
+const cancelBtn = document.getElementById('cancelBtn');
+const form = document.getElementById('createEventForm');
+
+// Open modal
+openBtn.addEventListener('click', (e) => {
+  e.preventDefault(); // stop page jump
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+});
+
+// Close modal function
+function closeModal() {
+  modal.style.display = 'none';
+  form.reset(); // optional: clear form when closing
+  document.body.classList.remove('modal-open');
+}
+
+// Close with X
+closeBtn.addEventListener('click', closeModal);
+
+// Cancel button
+cancelBtn.addEventListener('click', closeModal);
+
+// Close when clicking outside
+window.addEventListener('click', (e) => {
+  if (e.target === modal) {
+    closeModal();
+  }
+});
+</script>
+<!-- zayzay end -->
 
 </div>
 
@@ -93,9 +136,7 @@
 </div>
 <!-- event test  -->
 
-
 <?php include("footer.php"); ?>
 
-<script src="js/main.js"></script>
 </body>
 </html>
