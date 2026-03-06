@@ -11,11 +11,13 @@ function active($page, $current) {
     <img src="Image/logo.png" alt="EcoEvents Logo" class="logo-img">
     </a>
   </div>
+  
 
   <nav class="nav-links">
     <a href="dashboard.php" class="<?= active('dashboard.php', $current) ?>">Home</a>
     <a href="" class="<?= active('', $current) ?>">Events</a>
     <a href="" class="<?= active('', $current) ?>">About</a>
+    <a href="" class="<?= active('', $current) ?>">View Feedback</a>
   </nav>
 
   <div class="nav-right">
