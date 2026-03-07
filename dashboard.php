@@ -4,139 +4,147 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EcoEvents | Events</title>
-
   <link rel="stylesheet" href="CSS/style.css">
 </head>
 
 <body class="Dashboard">
+<!-- /* zayzay part */ -->
+<?php 
+include("config.php");
+include("header.php"); 
+?>
 
-<?php include("header.php"); ?>
+<?php
+$totalEventsResult = $conn->query("SELECT COUNT(*) AS total FROM events");
+$totalEvents = $totalEventsResult->fetch_assoc()['total'];
+
+$pendingResult = $conn->query("SELECT COUNT(*) AS total FROM events WHERE status = 'Pending'");
+$pendingCount = $pendingResult->fetch_assoc()['total'];
+
+$approvedResult = $conn->query("SELECT COUNT(*) AS total FROM events WHERE status = 'Approved'");
+$approvedCount = $approvedResult->fetch_assoc()['total'];
+
+$rejectedResult = $conn->query("SELECT COUNT(*) AS total FROM events WHERE status = 'Rejected'");
+$rejectedCount = $rejectedResult->fetch_assoc()['total'];
+
+$participantsResult = $conn->query("SELECT SUM(max_participants) AS total FROM events");
+$participantsData = $participantsResult->fetch_assoc();
+$totalParticipants = $participantsData['total'] ?? 0;
+?>
 
 <div class="EventDiscrption">
-  
   <div class="EventDiscrption-text">
     <h1>Organizer Dashboard</h1>
     <p>Manage your sustainable events</p>
   </div>
 
-
-<!-- zayzay start -->
-<!-- Create Event button -->
   <a href="#" id="openCreateModal" class="btn"><b>＋ Create Event</b></a>
   <?php include("CreateEvent.php"); ?>
 
-<script src="js/main.js"></script>
+  <script src="js/main.js"></script>
 
-<script>
-// Get modal and buttons
-const modal = document.getElementById('createEventModal');
-const openBtn = document.getElementById('openCreateModal');
-const closeBtn = document.querySelector('.close');
-const cancelBtn = document.getElementById('cancelBtn');
-const form = document.getElementById('createEventForm');
+  <script>
+  const modal = document.getElementById('createEventModal');
+  const openBtn = document.getElementById('openCreateModal');
+  const closeBtn = document.querySelector('.close');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const form = document.getElementById('createEventForm');
 
-// Open modal
-openBtn.addEventListener('click', (e) => {
-  e.preventDefault(); // stop page jump
-  modal.style.display = 'flex';
-  document.body.classList.add('modal-open');
-});
+  openBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  });
 
-// Close modal function
-function closeModal() {
-  modal.style.display = 'none';
-  form.reset(); // optional: clear form when closing
-  document.body.classList.remove('modal-open');
-}
-
-// Close with X
-closeBtn.addEventListener('click', closeModal);
-
-// Cancel button
-cancelBtn.addEventListener('click', closeModal);
-
-// Close when clicking outside
-window.addEventListener('click', (e) => {
-  if (e.target === modal) {
-    closeModal();
+  function closeModal() {
+    modal.style.display = 'none';
+    form.reset();
+    document.body.classList.remove('modal-open');
   }
-});
-</script>
-<!-- zayzay end -->
 
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  </script>
 </div>
 
 <div class="stats">
-    <div class="stat-card"><h3>My Events</h3><span>4</span></div>
-    <div class="stat-card"><h3>Total Participants</h3><span>75</span></div>
-    <div class="stat-card"><h3>Pending Approval</h3><span>1</span></div>
-    <div class="stat-card"><h3>Approved Events</h3><span>2</span></div>
+    <div class="stat-card"><h3>My Events</h3><span><?php echo $totalEvents; ?></span></div>
+    <div class="stat-card"><h3>Total Participants</h3><span><?php echo $totalParticipants; ?></span></div>
+    <div class="stat-card"><h3>Pending Approval</h3><span><?php echo $pendingCount; ?></span></div>
+    <div class="stat-card"><h3>Approved Events</h3><span><?php echo $approvedCount; ?></span></div>
 </div>
 
 <div class="tabs">
-    <div class="tab active">All Events (4)</div>
-    <div class="tab">Pending (1)</div>
-    <div class="tab">Approved (2)</div>
-    <div class="tab">Rejected (1)</div>
+    <div class="tab active">All Events (<?php echo $totalEvents; ?>)</div>
+    <div class="tab">Pending (<?php echo $pendingCount; ?>)</div>
+    <div class="tab">Approved (<?php echo $approvedCount; ?>)</div>
+    <div class="tab">Rejected (<?php echo $rejectedCount; ?>)</div>
 </div>
 
-<!-- event test  -->
 <div class="events">
 
-<div class="event-card">
-    <div class="event-image">
-        <div class="badge">Cleanup</div>
-        <div class="status">Approved</div>
-    </div>
-    <div class="event-content">
-        <h3>Beach Cleanup Drive</h3>
-        <p>Join us for a community beach cleanup to protect marine life.</p>
-        <div class="event-info">📅 Jan 25, 2026</div>
-        <div class="event-info">📍 Sunset Beach</div>
-        <div class="event-footer">
-            <span class="rating">⭐ 4.8</span>
-            <button class="view-btn">View Details</button>
-        </div>
-    </div>
-</div>
+<?php
+$result = $conn->query("SELECT * FROM events ORDER BY created_at DESC");
+
+while($row = $result->fetch_assoc()){
+?>
 
 <div class="event-card">
-    <div class="event-image">
-        <div class="badge">Plantation</div>
-        <div class="status">Approved</div>
+  <div class="event-image"
+       style="background-image:url('upload Event/<?php echo $row['event_image']; ?>');
+       background-size:cover;
+       background-position:center;">
+
+    <div class="badge"><?php echo $row['event_type']; ?></div>
+
+    <div class="status <?php echo strtolower($row['status']); ?>">
+      <?php echo $row['status']; ?>
     </div>
-    <div class="event-content">
-        <h3>Urban Tree Plantation</h3>
-        <p>Help us plant 200 native trees in the city park.</p>
-        <div class="event-info">📅 Feb 10, 2026</div>
-        <div class="event-info">📍 Central City Park</div>
-        <div class="event-footer">
-            <span class="rating">⭐ 4.9</span>
-            <button class="view-btn">View Details</button>
-        </div>
+  </div>
+
+  <div class="event-content">
+    <h3><?php echo $row['event_name']; ?></h3>
+    <p><?php echo $row['description']; ?></p>
+    <div class="event-info">📅 <?php echo $row['event_date']; ?></div>
+    <div class="event-info">📍 <?php echo $row['event_location']; ?></div>
+
+    <div class="event-footer">
+      <span class="rating">⭐ 4.8</span>
+     <a href="event_details.php?id=<?php echo $row['id']; ?>" class="view-btn">View Details</a>
     </div>
+  </div>
 </div>
 
-<div class="event-card">
-    <div class="event-image">
-        <div class="badge">Workshop</div>
-        <div class="status pending">Pending</div>
-    </div>
-    <div class="event-content">
-        <h3>Recycling Workshop</h3>
-        <p>Learn creative ways to recycle and upcycle everyday items.</p>
-        <div class="event-info">📅 Feb 20, 2026</div>
-        <div class="event-info">📍 Community Center</div>
-        <div class="event-footer">
-            <span class="rating">⭐ 4.6</span>
-            <button class="view-btn">View Details</button>
-        </div>
-    </div>
+<?php } ?>
+
 </div>
-</div>
-<!-- event test  -->
 
 <?php include("footer.php"); ?>
+
+<script>
+const imageInput = document.getElementById("eventImage");
+const preview = document.getElementById("imagePreview");
+
+if(imageInput){
+  imageInput.addEventListener("change", function(){
+    const file = this.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        preview.src = e.target.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+</script>
 
 </body>
 </html>
